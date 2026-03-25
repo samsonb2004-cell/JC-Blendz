@@ -940,7 +940,7 @@
         <div class="contact-detail">
           <i data-lucide="mail" class="contact-detail-icon" style="width:16px;height:16px;"></i>
           <div class="contact-detail-text">
-            <a href="mailto:jacopo.sublet@gmail.com" style="color:var(--silver);text-decoration:none;">jacopo.sublet@gmail.com</a>
+            <a href="mailto:jcblendzwien@gmail.com" style="color:var(--silver);text-decoration:none;">jcblendzwien@gmail.com</a>
           </div>
         </div>
         <div class="contact-detail">
@@ -973,7 +973,7 @@
   <div class="footer-bottom">
     <span>© 2025 JC Blendz — All rights reserved</span>
     <span style="color:var(--gold);letter-spacing:0.2em;">VIENNA · AUSTRIA</span>
-    <span>jacopo.sublet@gmail.com</span>
+    <span>jcblendzwien@gmail.com</span>
   </div>
 </section>
 
@@ -1005,7 +1005,7 @@
   reveals.forEach(el => observer.observe(el));
 
   // ── EmailJS
-  emailjs.init("YOUR_PUBLIC_KEY"); // ← Replace with your EmailJS public key
+  emailjs.init('e7cm6AHX4UNnZd1DU'); // 
 
   function submitForm(e) {
     e.preventDefault();
@@ -1026,12 +1026,12 @@
       service:     data.get('service'),
       date:        data.get('date'),
       time:        data.get('time'),
-      to_email:    'jacopo.sublet@gmail.com'
+      to_email:    'jcblendzwien@gmail.com'
     };
 
     emailjs.send(
-      'YOUR_SERVICE_ID',   // ← Replace with your EmailJS Service ID
-      'YOUR_TEMPLATE_ID',  // ← Replace with your EmailJS Template ID
+      'service_9jpw8ro',   //
+      'template_wvqa5hl',  // 
       templateParams
     ).then(() => {
       status.textContent = '✓ Booking request sent — Jacopo will confirm shortly.';
