@@ -6,7 +6,6 @@
 <title>JC Blendz — Premium Barbershop Vienna</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <link rel="preconnect" href="https://fonts.googleapis.com"/>
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
 <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400&family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
@@ -512,6 +511,7 @@
   }
   #form-status.success { color: var(--gold); }
   #form-status.error { color: #e57373; }
+  #form-status.loading { color: var(--gold-light); }
 
   /* CONTACT / FOOTER */
   #contact {
@@ -876,7 +876,7 @@
     <form id="booking-form" class="reveal reveal-delay-2" onsubmit="submitForm(event)">
       <div class="form-group">
         <label class="form-label">Your Name</label>
-        <input type="text" name="from_name" class="form-input" placeholder="e.g. Marco Rossi" required/>
+        <input type="text" name="name" class="form-input" placeholder="e.g. Marco Rossi" required/>
       </div>
 
       <div class="form-group">
@@ -1004,48 +1004,59 @@
   }, { threshold: 0.12 });
   reveals.forEach(el => observer.observe(el));
 
-  // ── EmailJS
-  emailjs.init('e7cm6AHX4UNnZd1DU'); // 
+  // ── Google Apps Script Integration
+  const APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyNoDRDJgwwPaW_wBfH5Nejfojer9bZ46wO5QG5uL49pxtFtlLaTUQWDAU2A_l1PkXl/exec';
 
+  // ── Form submission handler
   function submitForm(e) {
     e.preventDefault();
+
     const status = document.getElementById('form-status');
     const btn = e.target.querySelector('button[type="submit"]');
+    const form = e.target;
+
+    // Disable button and show loading state
     btn.disabled = true;
-    btn.textContent = 'Sending…';
-    status.textContent = '';
-    status.className = '';
+    btn.innerHTML = '<i data-lucide="loader" style="width:14px;height:14px;"></i> Sending...';
+    lucide.createIcons();
 
-    const form = document.getElementById('booking-form');
-    const data = new FormData(form);
+    status.textContent = 'Sending your booking request...';
+    status.className = 'loading';
 
-    // Build template params
-    const templateParams = {
-      from_name:   data.get('from_name'),
-      phone:       data.get('phone'),
-      service:     data.get('service'),
-      date:        data.get('date'),
-      time:        data.get('time'),
-      to_email:    'jcblendzwien@gmail.com'
+    // Collect form data
+    const formData = new FormData(form);
+    const data = {
+      name: formData.get('name'),
+      phone: formData.get('phone'),
+      service: formData.get('service'),
+      date: formData.get('date'),
+      time: formData.get('time')
     };
 
-    emailjs.send(
-      'service_9jpw8ro',   //
-      'template_wvqa5hl',  // 
-      templateParams
-    ).then(() => {
+    // Send to Google Apps Script
+    fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(data)
+    })
+    .then(() => {
+      // Success (we can't read response due to no-cors, but if no error, assume success)
       status.textContent = '✓ Booking request sent — Jacopo will confirm shortly.';
       status.className = 'success';
       form.reset();
-      btn.disabled = false;
-      btn.innerHTML = '<span>Send Booking Request</span>';
-      lucide.createIcons();
-    }).catch((err) => {
-      console.error('EmailJS error:', err);
+    })
+    .catch((err) => {
+      console.error('Error:', err);
       status.textContent = '✗ Something went wrong. Please try calling or WhatsApp instead.';
       status.className = 'error';
+    })
+    .finally(() => {
       btn.disabled = false;
-      btn.innerHTML = '<span>Send Booking Request</span>';
+      btn.innerHTML = '<i data-lucide="send" style="width:14px;height:14px;"></i> Send Booking Request';
+      lucide.createIcons();
     });
   }
 
